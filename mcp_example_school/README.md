@@ -198,6 +198,43 @@ xAI's API is OpenAI-compatible, so the client uses the `openai` Python package w
   because MCP SDK 2.x renamed `FastMCP` to `MCPServer`.
 - Secrets live only in `.env`, which is listed in `.gitignore`.
 
+## Testing with MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) is the official browser tool for
+listing and calling a server's tools directly, without the chatbot. It needs [Node.js](https://nodejs.org/).
+
+1. Start the HTTP server: `uv run mcp_server_http.py`
+2. In another terminal, from this folder, start the Inspector:
+
+   ```bash
+   npx @modelcontextprotocol/inspector
+   ```
+
+   Open the link it prints (it includes an access token).
+
+**HTTP tools**
+
+- Transport: **Streamable HTTP**
+- URL: `http://127.0.0.1:8050/mcp`
+- Click **Connect**, open **Tools**, and run `get_academic_data` with `sl_no` = `7`.
+
+**stdio tool**
+
+- Transport: **STDIO**
+- Command: `uv`
+- Arguments: `run mcp_server_stdio.py`
+- Click **Connect**, open **Tools**, and run `query_database` with `SELECT * FROM personal_data LIMIT 3`.
+
+The Inspector starts the stdio server from the folder you launched it in. If you launched it
+somewhere else, use the arguments `--directory /path/to/mcp_example_school run mcp_server_stdio.py`.
+
+Prefer the terminal? The Inspector also has a CLI mode:
+
+```bash
+npx @modelcontextprotocol/inspector --cli http://127.0.0.1:8050/mcp --transport http \
+  --method tools/call --tool-name get_academic_data --tool-arg sl_no=7
+```
+
 ## Troubleshooting
 
 **`warning: VIRTUAL_ENV=... does not match the project environment path .venv and will be ignored`**
