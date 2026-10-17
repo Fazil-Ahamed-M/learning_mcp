@@ -206,10 +206,16 @@ Another virtual environment is active in your terminal. This is harmless: uv ign
 project's `.venv`. To get rid of the warning, run `deactivate` first. With uv you never need to
 activate an environment yourself.
 
-**404s like `GET /` or `GET /json/version` in the HTTP server log**
+**`Not Acceptable: Client must accept text/event-stream` when opening `/mcp` in a browser**
 
-A browser, Chrome DevTools or VS Code is probing the port. The server only serves `/mcp`, so these
-requests get a 404. They are expected and harmless. To check the server is working, run
+This is expected. `/mcp` is for MCP clients, not browsers, so a plain browser request is rejected.
+Opening `http://127.0.0.1:8050/` shows a short "server is running" page instead. To test the tools,
+run `uv run mcp_client.py`.
+
+**404s like `GET /json/version` in the HTTP server log**
+
+A browser, Chrome DevTools or VS Code is probing the port. The server only serves `/` and `/mcp`, so
+other requests get a 404. They are expected and harmless. To check the server is working, run
 `uv run mcp_client.py`.
 
 **`address already in use` when starting the HTTP server**

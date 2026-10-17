@@ -1,4 +1,6 @@
 from mcp.server.fastmcp import FastMCP
+from starlette.requests import Request
+from starlette.responses import PlainTextResponse
 
 from db import get_connection
 
@@ -49,6 +51,12 @@ def get_academic_data(sl_no: int) -> dict:
         WHERE a.sl_no = %s
     """
     return fetch_one(sql, sl_no)
+
+
+@mcp.custom_route("/", methods=["GET"])
+async def home(request: Request) -> PlainTextResponse:
+    """A friendly page for browsers. MCP clients use /mcp."""
+    return PlainTextResponse("school-http MCP server is running. Connect an MCP client to /mcp.")
 
 
 # Run the server
