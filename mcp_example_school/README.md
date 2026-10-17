@@ -197,3 +197,28 @@ xAI's API is OpenAI-compatible, so the client uses the `openai` Python package w
 - The servers use `FastMCP` from the official MCP Python SDK. `pyproject.toml` pins `mcp<2`,
   because MCP SDK 2.x renamed `FastMCP` to `MCPServer`.
 - Secrets live only in `.env`, which is listed in `.gitignore`.
+
+## Troubleshooting
+
+**`warning: VIRTUAL_ENV=... does not match the project environment path .venv and will be ignored`**
+
+Another virtual environment is active in your terminal. This is harmless: uv ignores it and uses the
+project's `.venv`. To get rid of the warning, run `deactivate` first. With uv you never need to
+activate an environment yourself.
+
+**404s like `GET /` or `GET /json/version` in the HTTP server log**
+
+A browser, Chrome DevTools or VS Code is probing the port. The server only serves `/mcp`, so these
+requests get a 404. They are expected and harmless. To check the server is working, run
+`uv run mcp_client.py`.
+
+**`address already in use` when starting the HTTP server**
+
+Something else is already using port 8050. Find it with:
+
+```bash
+lsof -i :8050
+```
+
+Stop that process, or pick another port: change `port=8050` in `mcp_server_http.py` and
+`HTTP_SERVER_URL` in `mcp_client.py` to match.
