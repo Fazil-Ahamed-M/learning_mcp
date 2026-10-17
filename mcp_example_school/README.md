@@ -63,6 +63,37 @@ correct SQL for questions like *"Who has the highest marks in finance?"*.
 `query_database` is read-only in two ways: it rejects any query that does not start with `SELECT`,
 and it runs the query inside a MySQL `READ ONLY` transaction.
 
+## HTTP vs stdio servers: how they differ
+
+Both servers speak the same MCP protocol. What differs is how they run and how the client reaches them.
+
+**HTTP server (`mcp_server_http.py`)** is a normal long-running service at an address and port,
+`http://127.0.0.1:8050/mcp`. You start it yourself in its own terminal. It stays up whether anyone is
+using it or not, until you stop it with Ctrl+C (or `kill`). Many clients can share it at the same
+time. It listens on `127.0.0.1`, so only your machine can reach it, but it could serve remote clients
+if you exposed it on the network.
+
+**stdio server (`mcp_server_stdio.py`)** has no address or port. The client starts it as a child
+process and talks to it over the child's stdin and stdout. It lives exactly as long as the client's
+session: `mcp_client.py` starts it once at startup, the same process handles every `query_database`
+call in that chat, and it exits when you quit the client. Each client gets its own copy, and it only
+works on the same machine as the client.
+
+| | HTTP server | stdio server |
+|---|---|---|
+| Hosted at | `127.0.0.1:8050` | No address; a child process of the client |
+| Started by | You (`uv run mcp_server_http.py`) | The client, automatically |
+| Lifetime | Until you stop it | One client session |
+| Stopped by | Ctrl+C or `kill` | The client quitting |
+| Clients | Many share one server | One copy per client |
+| Reach | Local, or remote if exposed | Same machine only |
+
+For example, if you run `uv run mcp_client.py` in three terminals, you get three stdio server
+processes (one per client), and all three clients share the one HTTP server.
+
+That's also why you never run `mcp_server_stdio.py` yourself: it would just sit there waiting for
+MCP messages on its stdin. The client (or MCP Inspector, see below) launches it for you.
+
 ## Database
 
 `setup_db.py` creates the `school` database with two tables and fills them with 20 synthetic students.
