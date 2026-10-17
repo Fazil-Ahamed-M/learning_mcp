@@ -20,26 +20,30 @@ Assistant: Student 7 (Khalid Al Kaabi) marks:
 ```
                         ┌──────────────────────────┐
                         │      Grok (xAI API)      │
-                        │  picks which tool to use │
+                        │ picks which tool to use  │
                         └────────────▲─────────────┘
-                                     │ chat + tool calls
-                        ┌────────────┴─────────────┐
-  you ─── terminal ───▶ │      mcp_client.py       │
-                        │   (command-line chatbot) │
-                        └──────┬────────────┬──────┘
+                                     │ ▲ question + tool list
+                                     │ ▼ tool choice + final answer
+                        ┌────────────▼─────────────┐
+  you ◀── terminal ───▶ │      mcp_client.py       │
+                        │  (command-line chatbot)  │
+                        └──────▲────────────▲──────┘
                HTTP            │            │          stdio
    http://127.0.0.1:8050/mcp   │            │  (client starts it as a child process)
-                ┌──────────────▼───┐   ┌────▼─────────────────┐
-                │ mcp_server_http  │   │  mcp_server_stdio    │
-                │ get_personal_data│   │  query_database      │
-                │ get_academic_data│   │  (SELECT only)       │
-                └────────┬─────────┘   └─────────┬────────────┘
-                         └───────────┬───────────┘
-                               ┌─────▼─────┐
-                               │   MySQL   │
-                               │  school   │
-                               └───────────┘
+   tool call ▼ / result ▲      │            │      tool call ▼ / result ▲
+                ┌──────────────▼────┐   ┌───▼──────────────────┐
+                │  mcp_server_http  │   │   mcp_server_stdio   │
+                │ get_personal_data │   │    query_database    │
+                │ get_academic_data │   │    (SELECT only)     │
+                └─────────▲─────────┘   └──────────▲───────────┘
+                          │  SQL ▼ / rows ▲        │
+                ┌─────────▼────────────────────────▼───────────┐
+                │                MySQL: school                 │
+                └──────────────────────────────────────────────┘
 ```
+
+Every connection is two-way: each line carries a request one way and the response back.
+The ▲ and ▼ in the labels show which way each one travels.
 
 **How a question is answered**
 
