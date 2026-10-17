@@ -21,7 +21,7 @@ def query_database(query: str) -> str:
 
     Table personal_data (one row per student)
         sl_no              INT, primary key
-        student_name       VARCHAR(100), e.g. 'Aarav Sharma'
+        student_name       VARCHAR(100), e.g. 'Omar Al Mansoori'
         student_dob        DATE, e.g. '2009-04-17'
         mother_name        VARCHAR(100)
         mother_occupation  VARCHAR(100), e.g. 'Teacher', 'Doctor'

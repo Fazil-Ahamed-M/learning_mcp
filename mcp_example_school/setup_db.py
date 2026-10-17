@@ -3,13 +3,34 @@ from datetime import date, timedelta
 
 from db import get_connection
 
-FIRST_NAMES = ["Aarav", "Diya", "Kabir", "Ananya", "Rohan", "Meera", "Arjun", "Isha", "Vihaan", "Saanvi",
-               "Aditya", "Priya", "Karan", "Neha", "Rahul", "Sneha", "Dev", "Pooja", "Nikhil", "Tara"]
-LAST_NAMES = ["Sharma", "Iyer", "Khan", "Reddy", "Nair", "Gupta", "Das", "Menon", "Patel", "Singh"]
-MOTHER_NAMES = ["Lakshmi", "Sunita", "Fatima", "Kavya", "Anjali", "Rekha", "Divya", "Geeta", "Shalini", "Nisha"]
-FATHER_NAMES = ["Rajesh", "Suresh", "Imran", "Vikram", "Manoj", "Anil", "Sanjay", "Ravi", "Prakash", "Ashok"]
-OCCUPATIONS = ["Teacher", "Doctor", "Engineer", "Lawyer", "Accountant", "Farmer", "Nurse",
-               "Business Owner", "Banker", "Homemaker", "Architect", "Police Officer"]
+# One entry per family: (student first name, father first name, mother full name, family name).
+# In Gulf families the mother usually keeps her own family name; the student shares the father's.
+FAMILIES = [
+    ("Omar", "Ahmed", "Mariam Al Hashimi", "Al Mansoori"),
+    ("Arjun", "Rajesh", "Priya Sharma", "Sharma"),
+    ("Fatima", "Khalid", "Aisha Al Suwaidi", "Al Nuaimi"),
+    ("Yousef", "Hamad", "Noora Al Kuwari", "Al Thani"),
+    ("Diya", "Suresh", "Lakshmi Nair", "Nair"),
+    ("Aisha", "Saeed", "Latifa Al Mazrouei", "Al Falasi"),
+    ("Khalid", "Rashid", "Hessa Al Marri", "Al Kaabi"),
+    ("Daniel", "George", "Susan Thomas", "Thomas"),
+    ("Mariam", "Abdullah", "Shaikha Al Dhaheri", "Al Shamsi"),
+    ("Ali", "Mohammed", "Amna Al Mulla", "Al Mazrouei"),
+    ("Maria", "Jose", "Ana Santos", "Santos"),
+    ("Noora", "Jassim", "Moza Al Sulaiti", "Al Kuwari"),
+    ("Hamdan", "Sultan", "Reem Al Qasimi", "Al Ketbi"),
+    ("Rohan", "Anil", "Divya Menon", "Menon"),
+    ("Sara", "Faisal", "Huda Al Ansari", "Al Marri"),
+    ("Zayed", "Majid", "Alia Al Romaithi", "Al Muhairi"),
+    ("Ananya", "Ravi", "Kavya Iyer", "Iyer"),
+    ("Layla", "Tariq", "Salma Haddad", "Al Hammadi"),
+    ("Kabir", "Sanjay", "Neha Patel", "Patel"),
+    ("Ibrahim", "Imran", "Ayesha Siddiqui", "Khan"),
+]
+FATHER_OCCUPATIONS = ["Engineer", "Doctor", "Government Officer", "Business Owner", "Banker", "Pilot",
+                      "Lawyer", "Accountant", "Architect", "Police Officer", "Professor", "IT Manager"]
+MOTHER_OCCUPATIONS = ["Teacher", "Doctor", "Engineer", "Homemaker", "Pharmacist", "Banker",
+                      "Nurse", "Architect", "Government Officer", "Business Owner", "Lawyer", "Professor"]
 
 CREATE_PERSONAL_DATA = """
 CREATE TABLE personal_data (
@@ -35,21 +56,20 @@ CREATE TABLE academic_data (
 """
 
 
-def make_students(count: int = 20) -> tuple[list, list]:
-    """Generate synthetic personal and academic rows."""
+def make_students() -> tuple[list, list]:
+    """Build personal and academic rows from FAMILIES, with random DOBs, jobs and marks."""
     random.seed(42)  # same data on every run
     personal_rows, academic_rows = [], []
-    for sl_no in range(1, count + 1):
-        last_name = random.choice(LAST_NAMES)
+    for sl_no, (student, father, mother, family_name) in enumerate(FAMILIES, start=1):
         dob = date(2008, 1, 1) + timedelta(days=random.randint(0, 3 * 365))
         personal_rows.append((
             sl_no,
-            f"{FIRST_NAMES[sl_no - 1]} {last_name}",
+            f"{student} {family_name}",
             dob,
-            f"{random.choice(MOTHER_NAMES)} {last_name}",
-            random.choice(OCCUPATIONS),
-            f"{random.choice(FATHER_NAMES)} {last_name}",
-            random.choice(OCCUPATIONS),
+            mother,
+            random.choice(MOTHER_OCCUPATIONS),
+            f"{father} {family_name}",
+            random.choice(FATHER_OCCUPATIONS),
         ))
         academic_rows.append((sl_no, *[random.randint(35, 100) for _ in range(4)]))
     return personal_rows, academic_rows

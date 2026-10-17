@@ -8,11 +8,11 @@ It does this by calling tools exposed by **two MCP servers**: one over **HTTP** 
 You: What marks did student 7 get?
   [tool] get_academic_data({'sl_no': 7})
 
-Assistant: Student 7 (Arjun Gupta) marks:
-- English: 56
-- Science: 66
-- Business Education: 55
-- Finance: 94
+Assistant: Student 7 (Khalid Al Kaabi) marks:
+- English: 72
+- Science: 81
+- Business Education: 59
+- Finance: 43
 ```
 
 ## Architecture
@@ -58,7 +58,7 @@ Assistant: Student 7 (Arjun Gupta) marks:
 | `query_database` | `mcp_server_stdio.py` | stdio | `query` (SQL) | Query results as JSON. Only `SELECT` is allowed. |
 
 The docstring of `query_database` contains the full database schema, so Grok knows how to write
-correct SQL for questions like *"Who has the highest marks in science?"*.
+correct SQL for questions like *"Who has the highest marks in finance?"*.
 
 `query_database` is read-only in two ways: it rejects any query that does not start with `SELECT`,
 and it runs the query inside a MySQL `READ ONLY` transaction.
@@ -66,6 +66,9 @@ and it runs the query inside a MySQL `READ ONLY` transaction.
 ## Database
 
 `setup_db.py` creates the `school` database with two tables and fills them with 20 synthetic students.
+Most names are Arabic and Gulf names (for example Omar Al Mansoori, Fatima Al Nuaimi and Yousef Al Thani),
+alongside a few Indian, Filipino and other names. Each student shares the father's family name;
+mothers keep their own family name, as is common in the Gulf.
 
 **personal_data**
 
@@ -170,7 +173,7 @@ Commands inside the chat: `clear` resets the conversation, `exit` or `quit` ends
 |----------|-----------------|
 | What are the personal details of student 3? | `get_personal_data` |
 | What marks did student 7 get? | `get_academic_data` |
-| Who has the highest marks in science? | `query_database` |
+| Who has the highest marks in finance? | `query_database` |
 | Which students have a mother who is a doctor? | `query_database` |
 | What is the class average in finance? | `query_database` |
 
