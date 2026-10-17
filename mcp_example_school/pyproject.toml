@@ -1,0 +1,12 @@
+[project]
+name = "mcp-example-school"
+version = "0.1.0"
+description = "MCP example: a Grok chatbot that answers questions about students using HTTP and stdio MCP servers"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]<2",
+    "openai",
+    "pymysql",
+    "python-dotenv",
+]
